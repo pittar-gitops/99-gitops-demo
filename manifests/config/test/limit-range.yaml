@@ -2,6 +2,7 @@ apiVersion: v1
 kind: LimitRange
 metadata:
   name: limit-range
+  namespace: demo-uat
 spec:
   limits:
     - type: "Container"
