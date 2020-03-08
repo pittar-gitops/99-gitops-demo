@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: compute-quota
-  namespace: demo-uat
+  namespace: demo-test
 spec:
   hard:
     requests.cpu: '1'
