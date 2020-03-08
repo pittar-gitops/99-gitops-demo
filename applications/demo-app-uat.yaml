@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
   project: demo
   source:
-    path: manifests/apps/overlays/uat
+    path: manifests/apps/overlays/test
     repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
     targetRevision: master
     directory:
@@ -26,6 +26,6 @@ spec:
         namespace: argocd
         server: https://kubernetes.default.svc
       source:
-        path: manifests/apps/overlays/uat
+        path: manifests/apps/overlays/test
         repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
         targetRevision: master
