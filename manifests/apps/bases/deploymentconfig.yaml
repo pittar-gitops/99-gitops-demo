@@ -43,7 +43,13 @@ spec:
           protocol: TCP
         - containerPort: 8778
           protocol: TCP
-        resources: {}
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 512Mi
         readinessProbe:
           httpGet:
             path: /actuator/health
