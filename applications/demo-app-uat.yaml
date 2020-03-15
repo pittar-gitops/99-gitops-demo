@@ -9,7 +9,7 @@ spec:
   destination:
     namespace: argocd
     server: https://kubernetes.default.svc
-  project: demo
+  project: demo-apps
   source:
     path: manifests/apps/overlays/test
     repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
