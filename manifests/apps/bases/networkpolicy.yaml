@@ -3,7 +3,7 @@ kind: NetworkPolicy
 metadata:
   name: deny-other-namespaces
 spec:
-  podSelector: null
+  podSelector: {}
   ingress:
     - from:
         - podSelector: {}
