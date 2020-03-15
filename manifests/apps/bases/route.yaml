@@ -8,7 +8,6 @@ metadata:
     app.kubernetes.io/name: ""
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime: ""
-    app.openshift.io/runtime-version: dev
   name: petclinic
 spec:
   host: petclinic.example.com
