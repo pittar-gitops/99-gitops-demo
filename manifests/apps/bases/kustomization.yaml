@@ -4,3 +4,4 @@ resources:
 - service.yaml
 - route.yaml
 - deploymentconfig.yaml
+- networkpolicy.yaml
