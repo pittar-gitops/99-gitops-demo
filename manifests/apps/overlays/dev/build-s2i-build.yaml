@@ -2,9 +2,9 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   labels:
-    app: demo-app
-    name: demo-app-binary-build
-  name: demo-app-binary-build
+    app: petlinic
+    name: petclinic-build
+  name: petclinic-build
   namespace: cicd
 spec:
   failedBuildsHistoryLimit: 5

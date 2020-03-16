@@ -2,9 +2,9 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   labels:
-    app: demo-app
-    name: demo-app-jenkins-pipeline
-  name: demo-app-jenkins-pipeline
+    app: petclinic
+    name: petclinic-jenkins-pipeline
+  name: petclinic-jenkins-pipeline
   namespace: cicd
 spec:
   failedBuildsHistoryLimit: 5
