@@ -29,7 +29,7 @@ A small GitOps demo you can run on your own cluster.
 
 ## 2: Install Demo
 
-1. Clone [99-gitops-demo](https://github.com/pittar-gitops/99-gitops-demo) and switch to the `00-gitops-setup` directory.
+1. Clone [99-gitops-demo](https://github.com/pittar-gitops/99-gitops-demo) and switch to the `99-gitops-demo` directory.
 2. Create the Argo CD *Projects*.  These projects will hold the different Argo CD *Applications*.
     * `oc apply -f projects`
     * This will create Argo CD *projects* for the *demo app*, *cluster configuration*, and *ci/cd tools*.
