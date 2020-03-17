@@ -52,5 +52,34 @@ A small GitOps demo you can run on your own cluster.
         * A Jenkins Pipeline build, as well as a *binary source-to-image* build config in the `cicd` project.
         * A new `ImageStream` that will track the container images Jenkins will build.
 6. Create the **demo-app-dev** and **demo-app-test** applications.
-    * `oc apply -f applications/demo-builds.yaml`
-    * `oc apply -f applications/demo-builds.yaml`
+    * `oc apply -f applications/demo-app-dev.yaml`
+    * `oc apply -f applications/demo-app-uat.yaml`
+    * This will setup the `DeploymentConfig`, `Service`, and `Route`in each environment.
+    * It will also apply the appropriate *Kustomizations* to each environment.  For example, each environment needs to use a different container image tag and have a different 'Route' url.
+7. Done!  Your environment is now setup.  It's also completely reproducible!
+
+Now, if you delete our CodeReady Containers instance and follow the instructions above, you will have your environment back exactly how it should be.  This is the real power of GitOps!
+
+## Explore
+
+Take a moment to explore what was created, either with the OpenShift UI or the `oc` cli tool.  
+
+Take a look at what now exists in the `cicd` project (you should see Jenkins, an `ImageStream`, and two `BuildConfig`s).
+
+In the `demo-dev` and `demo-test` projects you will see the application is setup, but not yet running.  If you explore the `DeploymentConfig` in each project you will see they each are using a different `tag` (`:dev` for the DEV project, `:test` for the TEST project).  If you check *Project Access* you will also notice the *Jenkins* service account has `admin` access to these projects.
+
+## Build and Deploy
+
+* From the `cicd` project, click on **Builds** item from the left navigation panel.
+* Click on the `petclinic-jenkins-pipeline` link.
+* From `Action` drop down list at the top-right of the screen, select **Start Build**.
+* Alternatively, you can start the build with `oc`: `oc start-build petclinic-jenkins-pipeline -n cicd`
+
+This triggeres a Jenkins pipeline build. This will follow the steps in the `Jenkinsfile` located in the root of the associated git repository.  You can view this file here:
+[Jenkinsfile](https://github.com/pittar/spring-petclinic/blob/master/Jenkinsfile)
+
+You can follow along with the build in the OpenShift UI, or you can follow the logs in Jenkins.
+
+Once the build is complete, it will *tag* the container image with *dev* and *test* and rollout these changes to the appropriate projects.
+
+You can then see your running dev and test apps!
