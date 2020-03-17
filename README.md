@@ -55,10 +55,10 @@ A small GitOps demo you can run on your laptop.
     * `oc apply -f applications/demo-app-dev.yaml`
     * `oc apply -f applications/demo-app-uat.yaml`
     * This will setup the `DeploymentConfig`, `Service`, and `Route`in each environment.
-    * It will also apply the appropriate *Kustomizations* to each environment.  For example, each environment needs to use a different container image tag and have a different 'Route' url.
+    * It will also apply the appropriate *Kustomizations* to each environment.  For example, each environment needs to use a different container image tag and have a different `Route` url.
 7. Done!  Your environment is now setup.  It's also completely reproducible!
 
-Now, if you delete our CodeReady Containers instance and follow the instructions above, you will have your environment back exactly how it should be.  This is the real power of GitOps!
+Now, if you delete your CodeReady Containers instance and follow the instructions above, you will have your environment back exactly how it should be.  This is the real power of GitOps!
 
 ## Explore
 
