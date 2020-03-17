@@ -41,12 +41,7 @@ data:
           <resourceRequestMemory></resourceRequestMemory>
           <resourceLimitCpu></resourceLimitCpu>
           <resourceLimitMemory></resourceLimitMemory>
-          <envVars>
-            <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
-              <key>MAVEN_MIRROR_URL</key>
-              <value>http://nexus:8081/content/groups/public</value>
-            </org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
-          </envVars>
+          <envVars/>
           <ports/>
           <livenessProbe>
             <execArgs></execArgs>
