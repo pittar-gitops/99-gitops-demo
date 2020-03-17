@@ -3,10 +3,6 @@ kind: Kustomization
 bases:
 - ../../bases
 namespace: demo-dev
-resources:
-- build-imagestream.yaml
-- build-jenkins-pipeline.yaml
-- build-s2i-build.yaml
 patchesJson6902:
 - target:
     group: route.openshift.io
