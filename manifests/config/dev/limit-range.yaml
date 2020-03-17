@@ -11,10 +11,10 @@ spec:
         memory: "1Gi" 
       min:
         cpu: "100m" 
-        memory: "512Mi" 
+        memory: "256Mi" 
       default:
-        cpu: "500m" 
-        memory: "1Gi" 
+        cpu: "200m" 
+        memory: "256Gi" 
       defaultRequest:
         cpu: "200m" 
-        memory: "512Mi" 
+        memory: "256Mi" 
