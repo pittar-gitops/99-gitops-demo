@@ -70,7 +70,7 @@ In the `demo-dev` and `demo-test` projects you will see the application is setup
 
 ## Build and Deploy
 
-* From the `cicd` project, click on **Builds** item from the left navigation panel.
+* From the `cicd` project in the OpenShift UI, click on **Builds** item from the left navigation panel.
 * Click on the `petclinic-jenkins-pipeline` link.
 * From `Action` drop down list at the top-right of the screen, select **Start Build**.
 * Alternatively, you can start the build with `oc`: `oc start-build petclinic-jenkins-pipeline -n cicd`
