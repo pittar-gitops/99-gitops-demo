@@ -38,7 +38,7 @@ Of course, if you have more CPU or Memory, you can bump those numbers up accordi
 ## 1: Install Argo CD
 
 1. Login using the `oc` cli tool as a cluster admin (you can use the `kubeadmin` username and password supplied when you start CodeReady Containers).
-2. Clone [00-gitups-setup](https://github.com/pittar-gitops/00-gitops-setup) and switch to the `99-gitops-demo` directory.
+2. Clone [00-gitops-setup](https://github.com/pittar-gitops/00-gitops-setup) and switch to the `00-gitops-setup` directory.
 3. Run `./setup.sh` to install Argo CD on your cluster.
     * If you are using Windows, you can simply copy/paste the `oc` commands and run them from DOS, Powershell, or another terminal such as Cygwin or Linux Subsystems for Windows.
     * If you want to use `kubectl` instead, first create the `argocd` project, then manually run the `oc` commands using `kubectl` instead.
