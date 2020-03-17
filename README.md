@@ -1,6 +1,6 @@
 # GitOps Demo
 
-A small GitOps demo you can run on your own cluster.
+A small GitOps demo you can run on your laptop.
 
 ## What's Included
 
