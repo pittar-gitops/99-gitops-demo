@@ -35,19 +35,19 @@ A small GitOps demo you can run on your laptop.
     * This will create Argo CD *projects* for the *demo app*, *cluster configuration*, and *ci/cd tools*.
 3. Create the **config** application.
     * `oc apply -f applications/demo-config.yaml`
-    * In the Argo CD UI, you will notice a new application appear and begin the *sync* process.
+    * In the Argo CD UI, you will notice a new application appear and begins the *sync* process.
     * This will create:
-        * Three new projects/namespaces: `cicd`, `demo-dev`, `demok-test`
+        * Three new projects/namespaces: `cicd`, `demo-dev`, `demo-test`
         * Qutoas and Limits in the `demo-app` and `demo-test` projects.
         * Roles and role bindings to allow Jenkins (in the `cicd` project) to have *admin* access to the `demo-dev` and `demo-test` projects in order to deploy new container images.
 4. Create the **demo-cicd** application.
     * `oc apply -f applications/demo-cicd.yaml`
-    * In the Argo CD UI, you will notice a new application appear and begin the *sync* process.
+    * In the Argo CD UI, you will notice a new application appear and begins the *sync* process on this application.
     * This will create:
         * A new Jenkins instance in the `cicd` project.  It will take a minute or two for the Jenkins pod to fully start and become ready to run builds.
 5. Create the **demo-builds** application.
     * `oc apply -f applications/demo-builds.yaml`
-    * In the Argo CD UI, you will notice a new application appear and begin the *sync* process.
+    * In the Argo CD UI, you will notice a new application appear and begins the *sync* process on this application.
     * This will create:
         * A Jenkins Pipeline build, as well as a *binary source-to-image* build config in the `cicd` project.
         * A new `ImageStream` that will track the container images Jenkins will build.
