@@ -53,7 +53,7 @@ A small GitOps demo you can run on your laptop.
         * A new `ImageStream` that will track the container images Jenkins will build.
 6. Create the **demo-app-dev** and **demo-app-test** applications.
     * `oc apply -f applications/demo-app-dev.yaml`
-    * `oc apply -f applications/demo-app-uat.yaml`
+    * `oc apply -f applications/demo-app-test.yaml`
     * This will setup the `DeploymentConfig`, `Service`, and `Route`in each environment.
     * It will also apply the appropriate *Kustomizations* to each environment.  For example, each environment needs to use a different container image tag and have a different `Route` url.
 7. Done!  Your environment is now setup.  It's also completely reproducible!
