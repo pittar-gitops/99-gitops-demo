@@ -75,6 +75,8 @@ In the `demo-dev` and `demo-test` projects you will see the application is setup
 * From `Action` drop down list at the top-right of the screen, select **Start Build**.
 * Alternatively, you can start the build with `oc`: `oc start-build petclinic-jenkins-pipeline -n cicd`
 
+You should be able to access your Jenkins instance at [https://jenkins-cicd.apps-crc.testing/](https://jenkins-cicd.apps-crc.testing/).  Login using your kubeadmin username and password.  This is integrated with OpenShift OAuth.
+
 This triggeres a Jenkins pipeline build. This will follow the steps in the `Jenkinsfile` located in the root of the associated git repository.  You can view this file here:
 [Jenkinsfile](https://github.com/pittar/spring-petclinic/blob/master/Jenkinsfile)
 
@@ -82,4 +84,10 @@ You can follow along with the build in the OpenShift UI, or you can follow the l
 
 Once the build is complete, it will *tag* the container image with *dev* and *test* and rollout these changes to the appropriate projects.
 
-You can then see your running dev and test apps!
+You can then see your running dev and test apps!  They will be accessible at:
+* DEV: [http://petclinic-dev.apps-crc.testing/](http://petclinic-dev.apps-crc.testing/)
+* TEST: [http://petclinic-test.apps-crc.testing/](http://petclinic-test.apps-crc.testing/)
+
+## Conclusion
+
+Although this is a simple demo, it gives you a sense of how GitOps can fit into a well balanced CI/CD diet!
