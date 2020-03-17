@@ -4,14 +4,36 @@ A small GitOps demo you can run on your laptop.
 
 ## What's Included
 
-* Argo CD
+* Argo CD - Both the Operator and an Argo CD server
 * CI/CD tools - Only Jenkins for the demo
+* Jenkins pipeline and *source-to-image* binary build to create a container image.
 * Demo App (Spring Petclinic)
+* Quotas, Limits, NetworkPolicies... oh my!
 
 ## Prerequisites
 
 * [CodeReady Containers 1.6+](https://developers.redhat.com/products/codeready-containers/overview) - It's free!  Sign up for a free Red Hat account to download and install CodeReady Containers.
 * [oc command line tool](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/) or `kubectl`
+
+Since you will be running full fledged OpenShift 4 cluster, as well as Argo CD, Jenkins, Maven builds, container image builds, and two application environments, this demo does need a decent amount of resources.  This is the CodeReady Containers configuration that I have tested this demo on locally:
+
+```
+$ crc config view
+- cpus                                  : 4
+- memory                                : 12288
+- nameserver                            : 
+- pull-secret-file                      : /Users/pitta/Utils/crc/pull-secret.txt
+- vm-driver                             : hyperkit
+- warn-check-bundle-cached              : true
+```
+
+If you need to increase the number of cpu cores or memory your CodeReady Containers instance uses, run the commands:
+```
+$ crc config set cpus 4
+$ crc config set memory 12288
+```
+
+Of course, if you have more CPU or Memory, you can bump those numbers up accordingly.  Please note the **cpu** number is *hyper-threded cores*.  For example, a 4-core Intil i7 would have 8 hyper-threaded cores.  In this scenario, giving CodeReady Containers *4 cpus* would allocate it half of the CPU resources of your computer.
 
 ## 1: Install Argo CD
 
