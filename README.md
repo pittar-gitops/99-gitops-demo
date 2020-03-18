@@ -82,7 +82,10 @@ Login to the OpenShift console:
 * Login to OpenShift using the `kubeadmin` username and password printed in the terminal when it started.
 * Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
 
-![OpenShift](images/openshift.png) ![Argo CD](images/argocd.png)
+Your OpenShift and Argo CD consoles should look like this:
+
+![OpenShift](images/openshift.png)
+![Argo CD](images/argocd.png)
 
 ## Install Demo
 
