@@ -46,7 +46,9 @@ $ cd 99-gitops-demo
 
 ## 2: Install Argo CD
 
-1. Login using the `oc` cli tool as a cluster admin (you can use the `kubeadmin` username and password supplied when you start CodeReady Containers).
+1. Login using the `oc` cli tool as a cluster admin (you can use the `kubeadmin` username and password supplied when you start CodeReady Containers).  The login command printed when CodeReady Containers starts should look something like:\
+`oc login -u kubeadmin -p db9Dr-J2csc-8oP78-9sbmf https://api.crc.testing:6443`\
+Of coure, your password will be different.
 2. Run `./setup.sh` to install Argo CD on your cluster.
     * If you are using Windows, you can simply copy/paste the `oc` commands and run them from DOS, Powershell, or another terminal such as Cygwin or Linux Subsystems for Windows.
     * If you want to use `kubectl` instead, first create the `argocd` project, then manually run the `oc` commands using `kubectl` instead.
