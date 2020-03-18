@@ -149,7 +149,7 @@ Now that we have a Jenkins server and a couple of BuildConigs, we are ready to s
 In the OpenShift UI, you can switch to the *cicd* project and click on *Topology* (*Project* drop down at the top of the main panel).  Here, you will see a Jenkins server pod (either started or starting).  You will also see the two builds we just created if you click on the *Builds* link from the left nav.  Don't start these yet!
 
 If you want to open the Jenkins UI, you can click on the *open link* icon attached to the pod:
-![open link](image/jenkins.png)
+![open link](images/jenkins.png)
 
 
 5. Create the **demo-app-dev** and **demo-app-test** applications.
