@@ -80,6 +80,7 @@ Login to the Argo CD console:
 Login to the OpenShift console:
 * Run `crc console` to open the OpenShift console in a new browser tab.  You will have to accept the self-signed certificate.
 * Login to OpenShift using the `kubeadmin` username and password printed in the terminal when it started.
+* Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
 
 ![OpenShift](images/openshift.png) ![Argo CD](images/argocd.png)
 
@@ -104,7 +105,7 @@ This will create Argo CD *projects* for the *demo app*, *configuration*, and *CI
 
 Argo CD *applications* are custom resources that point to a git repository and the path within that repository where the manifests for your application (or any kind of Kuberntes resources) reside.
 
-Create the **config** application.  
+#### Create the Cluster Config application.  
 
 ```
 $ oc apply -f applications/demo-config.yaml 
@@ -120,17 +121,37 @@ To keep things simple, everything is contained in a single git repository for th
     * Three new projects/namespaces: `cicd`, `demo-dev`, `demo-test`
     * Qutoas and Limits in the `demo-app` and `demo-test` projects.
     * Roles and role bindings to allow Jenkins (in the `cicd` project) to have *admin* access to the `demo-dev` and `demo-test` projects in order to deploy new container images.
-3. Create the **demo-cicd** application.
-    * `oc apply -f applications/demo-cicd.yaml`
-    * In the Argo CD UI, you will notice a new application appear and begins the *sync* process on this application.
-    * This will create:
-        * A new Jenkins instance in the `cicd` project.  It will take a minute or two for the Jenkins pod to fully start and become ready to run builds.
-4. Create the **demo-builds** application.
-    * `oc apply -f applications/demo-builds.yaml`
-    * In the Argo CD UI, you will notice a new application appear and begins the *sync* process on this application.
-    * This will create:
-        * A Jenkins Pipeline build, as well as a *binary source-to-image* build config in the `cicd` project.
-        * A new `ImageStream` that will track the container images Jenkins will build.
+    * NetworkPolicy objects only allowing pods to communicate with other pods in the same project.
+
+You can click on the **demo-config** application in the Argo CD UI to see the list of object that were created.
+
+### 3. Create the Demo CI/CD and Builds applications.
+
+```
+$ oc apply -f applications/demo-cicd.yaml 
+application.argoproj.io/demo-cicd created
+
+$ oc apply -f applications/demo-builds.yaml 
+application.argoproj.io/demo-builds created
+```
+
+Now we are getting to the interesting stuff.  The **demo-cicd** application points to the *yaml* files requried to create a Jenkins master that is fully integrated with OpenShift.  Later, we will use this Jenkins instance to build our app from source.
+
+The **demo-builds** application sets up two different [BuildConfigs](https://docs.openshift.com/container-platform/4.3/builds/understanding-buildconfigs.html).  It will also create an [ImageStream](https://docs.openshift.com/container-platform/4.3/openshift_images/image-streams-manage.html) to track the container images you will be building.
+
+
+One of these Build Configs, `petclinic-jenkins-pipeline`, is a Jenkins Pipeline Build.  It will start a new build on our Jenkins server based on a git repository that has a `Jenkinsfile` in its root.
+
+The other, `petclinic-build`, is a [Source-to-Image](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html#build-strategy-s2i_build-strategies) (s2i) build.  It will take the binary output that Jenkins produces (an executable *jar* file in this case) and builds a new container image based on this binary (OpenJDK 8 in our case).
+
+Now that we have a Jenkins server and a couple of BuildConigs, we are ready to setup our application environments!
+
+In the OpenShift UI, you can switch to the *cicd* project and click on *Topology* (*Project* drop down at the top of the main panel).  Here, you will see a Jenkins server pod (either started or starting).  You will also see the two builds we just created if you click on the *Builds* link from the left nav.  Don't start these yet!
+
+If you want to open the Jenkins UI, you can click on the *open link* icon attached to the pod:
+![open link](image/jenkins.png)
+
+
 5. Create the **demo-app-dev** and **demo-app-test** applications.
     * `oc apply -f applications/demo-app-dev.yaml`
     * `oc apply -f applications/demo-app-test.yaml`
