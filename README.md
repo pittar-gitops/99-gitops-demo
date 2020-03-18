@@ -35,7 +35,7 @@ $ crc config set memory 12288
 
 Of course, if you have more CPU or Memory, you can bump those numbers up accordingly.  Please note the **cpu** number is *hyper-threded cores*.  For example, a 4-core Intil i7 would have 8 hyper-threaded cores.  In this scenario, giving CodeReady Containers *4 cpus* would allocate it half of the CPU resources of your computer.
 
-## 1: Clone the Demo Repository
+## Clone the Demo Repository
 
 Clone this repository and change to the `99-gitops-demo` directory.
 
@@ -44,9 +44,9 @@ $ git clone https://github.com/pittar-gitops/99-gitops-demo.git
 $ cd 99-gitops-demo
 ```
 
-## 2: Install Argo CD
+## Install Argo CD
 
-### Login with the oc command line tool
+### 1. Login with the oc command line tool
 
 Login using the `oc` cli tool as a cluster admin (you can use the `kubeadmin` username and password supplied when you start CodeReady Containers).  
 
@@ -58,7 +58,7 @@ oc login -u kubeadmin -p db9Dr-J2csc-8oP78-9sbmf https://api.crc.testing:6443
 
 Of coure, your password will be different.
 
-### Install Argo CD
+### 2. Install Argo CD
 
 The installation of the Argo CD operator and the creation of an Argo CD server instance are handled by the `setup.sh` script.
 
@@ -69,7 +69,7 @@ Run `./setup.sh` and wait for the script to complete.  It will take a few minute
 
 Be sure to note the **Argo CD password** printed when the script completes.  The default Argo CD password is the name of the main Argo CD pod.
 
-### Login to the OpenShift and Argo CD Consoles
+### 3. Login to the OpenShift and Argo CD Consoles
 
 Login to the Argo CD console:
 * Run `oc get route argocd-server -n argocd` to get the URL for your server.
@@ -83,21 +83,38 @@ Login to the OpenShift console:
 
 ![OpenShift](images/openshift.png) ![Argo CD](images/argocd.png)
 
-## 3: Install Demo
+## Install Demo
 
-1. Create the Argo CD *Projects*.  These projects will hold the different Argo CD *Applications*.
-    * `oc apply -f projects`
-    * This will create Argo CD *projects* for the *demo app*, *cluster configuration*, and *ci/cd tools*.
-2. Create the **config** application.
+### 1. Install Argo CD Projects
+
+[Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) are a way to manage Argo CD [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications).
+
+Create the Argo CD *Projects*.  These projects will hold the different Argo CD *Applications*.
 
 ```
-$ oc apply -f projects/
+$ oc apply -f projects
 appproject.argoproj.io/demo-apps created
 appproject.argoproj.io/demo-cicd created
 appproject.argoproj.io/demo-config created
 ```
 
-* `oc apply -f applications/demo-config.yaml`
+This will create Argo CD *projects* for the *demo app*, *configuration*, and *CI/CD tools*.
+
+### 2. Create Argo CD Applications
+
+Argo CD *applications* are custom resources that point to a git repository and the path within that repository where the manifests for your application (or any kind of Kuberntes resources) reside.
+
+Create the **config** application.  
+
+```
+$ oc apply -f applications/demo-config.yaml 
+application.argoproj.io/demo-config created
+```
+
+In a real environment, this would be a separate respository that is managed by the team that maintains your cluster.  This is the team that will create namespaces, create quotas and limits, setup network policies, and grant roles to users and service accounts.
+
+To keep things simple, everything is contained in a single git repository for this demo.
+
 * In the Argo CD UI, you will notice a new application appear and begins the *sync* process.
 * This will create:
     * Three new projects/namespaces: `cicd`, `demo-dev`, `demo-test`
