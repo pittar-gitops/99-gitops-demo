@@ -82,7 +82,8 @@ $ oc get route argocd-server -n argocd
 ```  
 * Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
 * Open the URL in a browser tab.  You will have to accept the self-signed certificate.
-* Login with user `admin` and the password printed in the terminal after the opertor finishes installing.
+* Login with user `admin` and the password printed in the terminal after the setup script completes.
+    * If you lose your terminal session, the password is the name of the argocd server pod.
 
 Login to the OpenShift console:
 
@@ -94,7 +95,7 @@ $ crc console
 
 You will have to accept the self-signed certificate.
 
-* Login to OpenShift using the `kubeadmin` username and password printed in the terminal when it started.
+* Login to OpenShift using the `kubeadmin` username and password printed in the terminal when CodeReady Containers finished booting.
 * Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
 
 Your (empty) OpenShift and Argo CD consoles should look like this.  You will fill them up soon!
@@ -136,7 +137,7 @@ To keep things simple, everything is contained in a single git repository for th
 
 * In the Argo CD UI, you will notice a new application appear and begins the *sync* process.
 * This will create:
-    * Three new projects/namespaces: `cicd`, `demo-dev`, `demo-test`
+    * Three new OpenShift projects/namespaces: `cicd`, `demo-dev`, `demo-test`
     * Qutoas and Limits in the `demo-app` and `demo-test` projects.
     * Roles and role bindings to allow Jenkins (in the `cicd` project) to have *admin* access to the `demo-dev` and `demo-test` projects in order to deploy new container images.
     * NetworkPolicy objects only allowing pods to communicate with other pods in the same project.
@@ -159,20 +160,21 @@ The **demo-builds** application sets up two different [BuildConfigs](https://doc
 
 One of these Build Configs, `petclinic-jenkins-pipeline`, is a [Jenkins Pipeline Build](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html#builds-strategy-pipeline-build_build-strategies).  It will start a new build on our Jenkins server based on a git repository that has a `Jenkinsfile` in its root.
 
-The other, `petclinic-build`, is a [Source-to-Image](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html#build-strategy-s2i_build-strategies) (s2i) build.  It will take the binary output that Jenkins produces (an executable *jar* file in this case) and builds a new container image based on this binary (OpenJDK 8 in our case).
+The other build, `petclinic-build`, is a [Source-to-Image](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html#build-strategy-s2i_build-strategies) (s2i) build.  It will take the binary output that Jenkins produces (an executable *jar* file in this case) and builds a new container image based on this binary (OpenJDK 8 in our case).
 
 A deeper dive into [builds on OpenShift](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html) is out of scope of this demo.  If you do want to learn more, the [documentation](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html) is a good place to start.
-
-Now that we have a Jenkins server and a couple of BuildConigs, we are ready to setup our application environments!
 
 In the OpenShift UI, you can switch to the *cicd* project and click on *Topology* (*Project* drop down at the top of the main panel).  Here, you will see a Jenkins server pod (either started or starting).  You will also see the two builds we just created if you click on the *Builds* link from the left nav.  Don't start these yet!
 
 If you want to open the Jenkins UI, you can click on the *open link* icon attached to the pod.  It will ask for your OpenShift login credentials, as this Jenkins image is integrated with OpenShift OAuth.
+
 ![open link](images/jenkins.png)
+
+Now that we have a Jenkins server and a couple of BuildConigs, we are ready to setup our application environments!
 
 ### 4. Create the DEV and TEST Application Environments
 
-The *policy* part of our DEV and TEST environments has been created for us in a previous step.  We now have empty **demo-dev** and **demo-test** projects (environments) ready to deploy some resources into!  Let's set that up now.  This would be the responsibility of the developement team and these are the resources they would have control over.
+The *policy* part (quotas/limits/networkpolicy/roles) of our DEV and TEST environments has been created for us in a previous step.  We now have empty **demo-dev** and **demo-test** projects (environments) ready to deploy some resources into!  Let's set that up now.  This would be the responsibility of the developement team and these are the resources they would have control over.
 
 Create DEV and TEST applications:
 
