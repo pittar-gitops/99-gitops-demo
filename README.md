@@ -80,7 +80,7 @@ Login to the Argo CD console:
 ```
 $ oc get route argocd-server -n argocd` to get the URL for your server.
 ```  
-    * Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
+* Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
 * Open the URL in a browser tab.  You will have to accept the self-signed certificate.
 * Login with user `admin` and the password printed in the terminal after the opertor finishes installing.
 
