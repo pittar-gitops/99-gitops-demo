@@ -76,19 +76,19 @@ Be sure to note the **Argo CD password** printed when the script completes.  The
 ### 3. Login to the OpenShift and Argo CD Consoles
 
 Login to the Argo CD console:
-* Run :\
+* Run :  
 ```
 $ oc get route argocd-server -n argocd` to get the URL for your server.
-```\
+```  
     * Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
 * Open the URL in a browser tab.  You will have to accept the self-signed certificate.
 * Login with user `admin` and the password printed in the terminal after the opertor finishes installing.
 
 Login to the OpenShift console:
-* Run:\
+* Run:  
 ```
 $ crc console
-```\
+```  
 to open the OpenShift console in a new browser tab.  You will have to accept the self-signed certificate.
 * Login to OpenShift using the `kubeadmin` username and password printed in the terminal when it started.
 * Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
