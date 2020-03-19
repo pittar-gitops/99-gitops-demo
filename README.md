@@ -62,7 +62,11 @@ Of coure, your password will be different.
 
 The installation of the Argo CD operator and the creation of an Argo CD server instance are handled by the `setup.sh` script.
 
-Run `./setup.sh` and wait for the script to complete.  It will take a few minutes to install the operator, then create an Argo CD server instance.
+Run:
+```
+$ ./setup.sh
+```` 
+and wait for the script to complete.  It will take a few minutes to install the operator, then create an Argo CD server instance.
 
 * If you are using Windows, you can simply copy/paste the `oc` commands and run them from DOS, Powershell, or another terminal such as Cygwin or Linux Subsystems for Windows.
 * If you want to use `kubectl` instead, first create the `argocd` project, then manually run the `oc` commands using `kubectl` instead.
@@ -72,13 +76,20 @@ Be sure to note the **Argo CD password** printed when the script completes.  The
 ### 3. Login to the OpenShift and Argo CD Consoles
 
 Login to the Argo CD console:
-* Run `oc get route argocd-server -n argocd` to get the URL for your server.
+* Run :\
+```
+$ oc get route argocd-server -n argocd` to get the URL for your server.
+```\
     * Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
 * Open the URL in a browser tab.  You will have to accept the self-signed certificate.
 * Login with user `admin` and the password printed in the terminal after the opertor finishes installing.
 
 Login to the OpenShift console:
-* Run `crc console` to open the OpenShift console in a new browser tab.  You will have to accept the self-signed certificate.
+* Run:\
+```
+$ crc console
+```\
+to open the OpenShift console in a new browser tab.  You will have to accept the self-signed certificate.
 * Login to OpenShift using the `kubeadmin` username and password printed in the terminal when it started.
 * Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
 
