@@ -69,7 +69,7 @@ $ ./setup.sh
 and wait for the script to complete.  It will take a few minutes to install the operator, then create an Argo CD server instance.
 
 * If you are using Windows, you can simply copy/paste the `oc` commands and run them from DOS, Powershell, or another terminal such as Cygwin or Linux Subsystems for Windows.
-* If you want to use `kubectl` instead, first create the `argocd` project, then manually run the `oc` commands using `kubectl` instead.
+* If you want to use `kubectl` instead of `oc`, first create the `argocd` project, then manually run the `oc` commands using `kubectl` instead.
 
 Be sure to note the **Argo CD password** printed when the script completes.  The default Argo CD password is the name of the main Argo CD pod.
 
