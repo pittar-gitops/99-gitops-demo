@@ -78,7 +78,7 @@ Be sure to note the **Argo CD password** printed when the script completes.  The
 Login to the Argo CD console:
 * To get the URL for your server, run:
 ```
-$ oc get route argocd-server -n argocd` .
+$ oc get route argocd-server -n argocd
 ```  
 * Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
 * Open the URL in a browser tab.  You will have to accept the self-signed certificate.
