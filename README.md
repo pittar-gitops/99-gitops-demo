@@ -191,10 +191,9 @@ If you check your Argo CD console, you will see two new projects have appeared. 
 * A Service to load balance traffic to pods on the internal network.
 * A [Route](https://docs.openshift.com/container-platform/4.3/networking/routes/route-configuration.html) to expose the application to the outside world.
 
-In each case, Argo CD will use Kustomize to specify the container image that should be used in each environment, as well as a unique URL for the routes in each environment.
+In each case, Argo CD will use [Kustomize](https://kustomize.io/) to specify the container image that should be used in each environment, as well as a unique URL for the routes in each environment.
 
 If you take a look at either of the projects in the OpenShift UI, you will notice the pods aren't running yet.  That is because Jenkins is responsible for *rolling out* our application once it has been built and tested.  We will do this next!
-
 
 ### 5.  Build and Deploy
 
