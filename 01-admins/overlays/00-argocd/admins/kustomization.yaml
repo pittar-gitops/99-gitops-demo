@@ -6,7 +6,3 @@ resources:
 - 01-cicd-admin-config-app.yaml
 - 02-petclinic-dev-admin-config-app.yaml
 - 03-petclinic-test-admin-config-app.yaml
-- 04-cicd-developer-app.yaml
-- 05-petclinic-dev-developer-app.yaml
-- 06-petclinic-test-developer-app.yaml
-- 07-petclinic-builds-developer-app.yaml

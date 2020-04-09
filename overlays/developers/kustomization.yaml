@@ -1,0 +1,6 @@
+# Copy your sealed-secrets-secert into this dir before running apply -k
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd
+bases:
+- ../../../01-admins/overlays/00-argocd/developers
