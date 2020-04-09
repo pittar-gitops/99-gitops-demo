@@ -74,4 +74,3 @@ spec:
           namespace: cicd
           name: 'petclinic:latest'
   test: false
-  triggers: []
