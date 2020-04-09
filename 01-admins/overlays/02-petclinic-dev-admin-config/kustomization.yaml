@@ -6,4 +6,3 @@ bases:
 - ../../base/02-petclinic-admin-config
 resources:
 - 01-namespace.yaml
-- 02-jenkins-rolebinding.yaml
