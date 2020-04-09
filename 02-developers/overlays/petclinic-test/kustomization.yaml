@@ -9,4 +9,4 @@ patchesJson6902:
     version: v1
     kind: DeploymentConfig
     name: petclinic
-  path: deploymentconfig-patch.json
+  path: deploymentconfig-patch.yaml
