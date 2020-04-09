@@ -5,7 +5,7 @@ LANG=C
 echo ""
 echo "Installing Argo CD Operator."
 
-oc apply -k argocd-operator/overlays/default
+oc apply -k argocd-operator/overlays
 
 echo "Pausing for 15 seconds for operator initialization..."
 
@@ -19,7 +19,7 @@ oc get crd | grep argo
 
 echo "Deploying Argo CD instance"
 
-oc apply -k argocd/overlays/default
+oc apply -k argocd/overlays
 
 echo "Waiting for Argo CD server to start..."
 
