@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: demo-config
   source:
-    path: 01-admins/overlays/03-petclinic-test-admin
+    path: 01-admins/overlays/03-petclinic-test-admin-config
     repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
     targetRevision: master
   syncPolicy:
