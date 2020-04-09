@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: demo-cicd
+  name: demo-apps
   namespace: argocd
 spec:
   clusterResourceBlacklist:

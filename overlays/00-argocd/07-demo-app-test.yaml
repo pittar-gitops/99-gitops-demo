@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: demo-cicd
+  name: demo-app-test
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -9,9 +9,9 @@ spec:
   destination:
     namespace: argocd
     server: https://kubernetes.default.svc
-  project: demo-cicd
+  project: demo-apps
   source:
-    path: manifests/apps/cicd
+    path: manifests/apps/overlays/test
     repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
     targetRevision: master
     directory:
@@ -25,12 +25,3 @@ spec:
     kind: Route
     jsonPointers:
     - /status/ingress
-  sync:
-    comparedTo:
-      destination:
-        namespace: argocd
-        server: https://kubernetes.default.svc
-      source:
-        path: manifests/apps/cicd
-        repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
-        targetRevision: master

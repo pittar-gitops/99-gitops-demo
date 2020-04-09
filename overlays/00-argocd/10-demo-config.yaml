@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: demo-config
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: argocd
@@ -19,13 +17,4 @@ spec:
   syncPolicy:
     automated:
       prune: false
-      selfHeal: false
-  sync:
-    comparedTo:
-      destination:
-        namespace: argocd
-        server: https://kubernetes.default.svc
-      source:
-        path: manifests/config
-        repoURL: https://github.com/pittar-gitops/99-gitops-demo.git
-        targetRevision: master
+      selfHeal: true
