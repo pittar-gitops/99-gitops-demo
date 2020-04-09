@@ -12,4 +12,4 @@ subjects:
   namespace: petclinic-dev
 - kind: ServiceAccount
   name: default
-  namespace: petclinic-uat
+  namespace: petclinic-test

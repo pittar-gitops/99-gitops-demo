@@ -5,3 +5,4 @@ bases:
   - ../../base/cicd
 resources:
   - 01-namespace.yaml
+  - 02-jenkins-image-puller-rolebinding.yaml

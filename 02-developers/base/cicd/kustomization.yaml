@@ -3,7 +3,3 @@ kind: Kustomization
 bases:
 - github.com/redhat-canada-gitops/10-devtools/jenkins2/base?ref=master
 - github.com/redhat-canada-gitops/10-devtools/nexus2/base?ref=master
-resources:
-- 01-networkpolicy-isolation.yaml
-- 02-networkpolicy-allow-ingress.yaml
-- 03-jenkins-image-puller-rolebinding.yaml
