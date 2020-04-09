@@ -9,7 +9,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: petclinic-dev
+  namespace: demo-dev
 - kind: ServiceAccount
   name: default
-  namespace: petclinic-test
+  namespace: demo-test
