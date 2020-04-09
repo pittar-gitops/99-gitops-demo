@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - 01-networkpolicy-deny-other-namespaces.yaml
 - 02-networkpolicy-allow-router-ingress.yaml
+- 03-jenkins-image-puller-rolebinding.yaml
