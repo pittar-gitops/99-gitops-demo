@@ -45,7 +45,7 @@ $ git clone https://github.com/pittar-gitops/99-gitops-demo.git
 $ cd 99-gitops-demo
 ```
 
-## Install Argo CD
+## Install Argo CD Operator and Instance
 
 ### 1. Login with the oc command line tool
 
@@ -64,9 +64,11 @@ If you are using a real OpenShift 4.x cluster, or OKD 4 cluster, you can find th
 The installation of the Argo CD operator and the creation of an Argo CD server instance are handled by the `setup-argocd.sh` script.
 
 Run:
+
 ```
 $ ./setup-argocd.sh
 ```` 
+
 and wait for the script to complete.  It will take a few minutes to install the operator, then create an Argo CD server instance.
 
 * If you are using Windows, you can simply copy/paste the `oc` commands and run them from DOS, Powershell, or another terminal such as Cygwin or Linux Subsystems for Windows.
@@ -107,64 +109,122 @@ Although this demo is greatly simplified, the general idea is that *cluster admi
 
 At the end of this demo, you can start over and strictly use the existing Kustomize resources if you want to see how to provision the same infrastructure without using Argo CD.
 
-### 1. Install the Admin Configuration
+### 1. Configure the Admin Projects and Applications
 
 From the command line, run the following command to create the administrator [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) and [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications) in Argo CD.
 
 ```
-$ oc apply -k overlays/admins/
+oc apply -k 01-admins/overlays/00-argocd/admins/
 ```
 
-This will find the `kustomization.yaml` file in the specified directory and 
+This will find the `kustomization.yaml` file in the specified directory and apply the `resources` that are listed.  Since the the `kustomization.yaml` file also specifies a *namespace* of `argocd`, this namespace will be added to each of the resources.
 
-[Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) are a way to manage Argo CD [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications).
+So, what just happened?
 
-Create the Argo CD *Projects*.  These projects will hold the different Argo CD *Applications*.
+First, two Argo CD [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) were created.  One project for *admin* related activities and one for *developer* related activities.  Argo CD *Projects* are a convenient way to group Argo CD *Applications* (explained next).  *Projects* also determine what *cluster* and *namespace* resources associated *Applications* may or may not control, what cluster the appliations are meant for, and what git repositories can be referenced.
 
-```
-$ oc apply -f projects
-appproject.argoproj.io/demo-apps created
-appproject.argoproj.io/demo-cicd created
-appproject.argoproj.io/demo-config created
-```
+Second, there were three [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications) created.  Argo CD *Applications* reference a git repository and context path where Kubernetes manifests (or Helm charts) can be found.  The lifecycle of these manifests in the target cluster is then managed by Argo CD.  The three applications that were created by the command above are:
+* CICD Admin Config: CICD namespace, network policies, and Jenkins role binding.
+* Petclinic DEV Admin Config: Petclinic DEV namespace, network policies, compute quota/limit, Jenkins role binding.
+* Petclinic TEST Admin Config: Petclinic TEST namespace, network policies, compute quota/limit, Jenkins role binding.
 
-This will create Argo CD *projects* for the *demo app*, *configuration*, and *CI/CD tools*.
+As you can see, these tasks often associated with a "cluster administrator".  As such, the git repository that manages these applications and manifests would be controled by the cluster administrators.
 
-### 2. Create Argo CD Applications
+The Argo CD admin console will now list three applications.
+
+![Argo CD with Admin apps](images/argocd-admin-apps.png)
+
+Now that the cluster has been configured with three new namespaces (cicd, demo-dev, demo-test) and standard configurations (network policy, quotas, role bindings, etc...), it's time to populate these projects.
+
+### 2. Configure the Developer Applications
 
 Argo CD *applications* are custom resources that point to a git repository and the path within that repository where the manifests for your application (or any kind of Kuberntes resources) reside.
 
-#### Create the Cluster Config application.  
+Once again, we will use the Kustomize functionality built into the `oc` command line tool (or `kubectl`) to popluate our new namespaces.
+
+From the command line, run the following command:
 
 ```
-$ oc apply -f applications/demo-config.yaml 
-application.argoproj.io/demo-config created
+$ oc apply -k 01-admins/overlays/00-argocd/developers/
 ```
 
-In a real environment, this would be a separate respository that is managed by the team that maintains your cluster.  This is the team that will create namespaces, create quotas and limits, setup network policies, and grant roles to users and service accounts.
+This time around there are no Argo CD *Projects* to create, but there are four more Argo CD *Applications*.  These are:
+* CICD Developer: Configure CI/CD tools on the cluster.  In this case, just Jenkins 2.
+* Petclinic DEV: Petclinic DEV environment, including DeploymentConfig, Service, ServiceAccount, and Route.
+* Petclinic TEST: Petclinic TEST environment, including DeploymentConfig, Service, ServiceAccount, and Route.
+* Petclinic Builds: Source-to-Image BuildConfig, Jenkins Pipeline BuildConfig, and Petclinic ImageStream.
 
-To keep things simple, everything is contained in a single git repository for this demo.
+Now, your Argo CD UI should have 7 applications.  Some may still by synchronizing, so wait a moment until they are all green.  Your UI should look something like this:
 
-* In the Argo CD UI, you will notice a new application appear and begins the *sync* process.
-* This will create:
-    * Three new OpenShift projects/namespaces: `cicd`, `demo-dev`, `demo-test`
-    * Qutoas and Limits in the `demo-app` and `demo-test` projects.
-    * Roles and role bindings to allow Jenkins (in the `cicd` project) to have *admin* access to the `demo-dev` and `demo-test` projects in order to deploy new container images.
-    * NetworkPolicy objects only allowing pods to communicate with other pods in the same project.
+![Argo CD with all applications](images/argocd-all-apps.png)
 
-You can click on the **demo-config** application in the Argo CD UI to see the list of object that were created.
+Now that we have populated the cluster, you can click in and take a look at what has been created in these apps.  If you look at the `petclinic-dev` application in the `demo-apps` project, you will see that a number of objects have been created.  But where did they come from?
 
-### 3. Create the Demo CI/CD and Builds applications.
+Well, if you look at the definition of the `petclinic-dev` application, you will see it points to a particular git repository and context path, namely [https://github.com/pittar-gitops/99-gitops-demo.git and /02-developers/overlays/petclinic-dev](https://github.com/pittar-gitops/99-gitops-demo/tree/master/02-developers/overlays/petclinic-dev).  In here you will find two things:
+1. Another `kustomization.yaml` file
+2. A `deploymnetconfig-patch.yaml` file.
+
+Just like `oc` and `kubectl`, Argo CD is happy to use Kustomize!  This is great, since it's a standard Kubernetes tool that cuts out duplication and greatly simplifies templating.  This kustomization file does three things:
+1. It points to a generaic **bases** directory, where the generic kubernetes yaml files can be found for the Petclinic app.
+2. Tells Kustomize what namespace needs to be added to these resources.
+3. Patches the image name that the "dev" version of the DeploymentConfig will use.
+
+Looking at the bases directory that is referenced, you can see the list of resources is a standard set of yaml files to run and expose an app.  When using Kustomize, you do need a `kustomization.yaml` file in this directory as well to tell Kustomize what files to include.
+
+Just like using Kustomize from the `oc apply -k` or `kubectl apply -k`, Argo CD handles kustomization.yaml files the same way.  Not only does this mean that apps you already have setup to use Kustomize can be easily managed by Argo CD, but it also means that any app you develop with Argo CD in mind can also be easily deployed simply using Kustomize.  Bonus!
+
+Before we move on, there is one other cool Kustomize feature to call attention to, the ability to use remote bases!
+
+If you dig through this git repository and try to find the Jenkins manifests, you will come up empty.  This is becasue for Jenkins I am pointing to bases in a completely different git repository.  This is another great feature and can help you create "libraries" of applications or tools that can be easily referenced rather than copy/paste reproduced.  Since you can add/patch/update almost anything with Kustomize, it's easy to create a generic base that can be used for many different purposes.
+
+If you look at the *CICD* overlay, you'll see it looks like this:
 
 ```
-$ oc apply -f applications/demo-cicd.yaml 
-application.argoproj.io/demo-cicd created
-
-$ oc apply -f applications/demo-builds.yaml 
-application.argoproj.io/demo-builds created
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cicd
+bases:
+- github.com/redhat-canada-gitops/10-devtools/jenkins2/overlays/m2-pvc?ref=master
+# If you want to use Nexus2 as well, delete the line above and uncomment the lines below.
+#- github.com/redhat-canada-gitops/10-devtools/jenkins2/overlays/nexus2-settings?ref=master
+#- github.com/redhat-canada-gitops/10-devtools/nexus2/base?ref=master
 ```
 
-Now we are getting to the interesting stuff.  The **demo-cicd** application points to the *yaml* files requried to create a Jenkins master that is fully integrated with OpenShift.  Later, we will use this Jenkins instance to build our app from source.
+Here we still specify the `namespace` that we want to set in all of our manifests, but we also list one (or more) remote bases to reference.  Woot!
+
+### Run a Build and Deploy to DEV and TEST
+
+Ok... now that we have configuration set for DEV and TEST.
+
+If you noticed when you were looking around, one of the applications that was created is for *petclinic builds*.  This creates an *ImageStream* to track the Petclinic container images, a *Jenkins Pipeline* build to compile, test and deploy the appliation, and a *source-to-image* build that Jenkins will use to build a new container image from the executable jar that the Maven build produces.
+
+Let's kick this process off!
+
+In the OpenShift console, navigate to the **cicd* project.  From the *Developer* perspective (if your console says "Administrator" in the top-left corner of the UI, then click on that text and change to "Developer"), click on **Builds -> petclinic-jenkins-pipeline**, then from the **Actions** drop down near the top-right select *Start Build*.
+
+A lot is about to happen, most of it out of the scope of GitOps and Argo CD!  In fact, in this scenario, the GitOps part of the process is complete.  What has our GitOps process (made possible by Kustomize and Argo CD) done for us?  It has:
+1. Configured three new namespaces (environments) for use:  cicd, demo-dev, demo-test
+2. Configured administrative details about these environments such as network policies, resource quotas and limits, and role bindings.
+3. Configured and deployed CI/CD tools (ok... just Jenkins, but you can easily add other tools like Nexus, SonarQube, Selenium Hub, etc...)
+4. Configured the "DEV" Petclinic environment, including setting the proper route URL and container image to use in DEV.
+5. Configured the "TEST" Petclinic environment, including setting the proper route URL and container image to use in TEST.
+6. Created builds and pipelines to compile, test, build, and deploy the Petclinic application across two environments.
+
+Not bad! GitOps is quite useful!  
+
+So, what is the build that we just kicked off responsible for?  Well:
+1. It clones the code repository (always separte from the gitops repository).
+2. Spins up a Maven Jenkins agent to compile and test the code.
+3. Triggers the *source-to-image* build to make a new container image, tagged as "latest", from the Petclinic jar file.
+4. Tags the new image with the "DEV" tag and starts a rollout (deployment) in the "demo-dev" environment.
+5. Tags the "DEV" image with the "TEST" tag and starts a rollout (deployment) in the "demo-test" environment.
+
+If you want to follow the build logs, you can click the "view logs" link in the pipeline.  This will bring you to the Jenkins build log for this build.  You will have to login to Jenkins with your OpenShift credentials, as it is fully integrated with OpenShift OAuth.
+
+Done!  In only a few minutes we have gone from a completely empty cluster to a cluster with properly configured environments, CI/CD tools, builds, and running instances of an application!
+
+
+
 
 The **demo-builds** application sets up two different [BuildConfigs](https://docs.openshift.com/container-platform/4.3/builds/understanding-buildconfigs.html).  It will also create an [ImageStream](https://docs.openshift.com/container-platform/4.3/openshift_images/image-streams-manage.html) to track the container images you will be building.
 
