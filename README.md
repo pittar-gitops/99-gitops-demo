@@ -1,6 +1,6 @@
-# GitOps Demo
+# OpenShift GitOps Demo: Kustomize and Argo CD
 
-A small GitOps demo you can run on your laptop.
+A small GitOps demo on [OpenShift](https://openshift.com) using [Kustomize](https://github.com/kubernetes-sigs/kustomize) for manifest customization/templating and [Argo CD](https://argoproj.github.io/argo-cd/) to manage OpenShift cluster configuration, environments, and applications based on the Kustomize resources.
 
 ## What's Included
 
@@ -8,14 +8,15 @@ A small GitOps demo you can run on your laptop.
 * CI/CD tools - Only Jenkins for the demo
 * Jenkins pipeline and *source-to-image* binary build to create a container image.
 * Demo App (Spring Petclinic)
-* Quotas, Limits, NetworkPolicies... oh my!
+* Resource Quotas, Limits, NetworkPolicies... oh my!
 
 ## Prerequisites
 
+* An [OpenShfit Container Platform 4.x cluster](https://try.openshift.com) with `cluster-admin` rights, **OR**
 * [CodeReady Containers 1.6+](https://developers.redhat.com/products/codeready-containers/overview) - It's free!  Sign up for a free Red Hat account to download and install CodeReady Containers on your local machine.
 * [oc command line tool](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/) or `kubectl`
 
-Since you will be running full fledged OpenShift 4 cluster, as well as Argo CD, Jenkins, Maven builds, container image builds, and two application environments, this demo does need a decent amount of resources.  This is the CodeReady Containers configuration that I have tested this demo on locally:
+If you choose to use [CodeReady Containers 1.6+](https://developers.redhat.com/products/codeready-containers/overview) you will be running full fledged OpenShift 4 cluster, as well as Argo CD, Jenkins, Maven builds, container image builds, and two application environments, this demo does need a decent amount of resources.  This is the CodeReady Containers configuration that I have tested this demo on locally:
 
 ```
 $ crc config view
@@ -48,64 +49,73 @@ $ cd 99-gitops-demo
 
 ### 1. Login with the oc command line tool
 
-Login using the `oc` cli tool as a cluster admin (you can use the `kubeadmin` username and password supplied when you start CodeReady Containers).  
+Login to your cluster using the `oc` cli tool as a cluster admin.  If you are using CodeReady Containers, you can use the `kubeadmin` username and password supplied when you start your instance.  
 
-The login command printed when CodeReady Containers starts should look something like:
+For example, the login command printed when CodeReady Containers starts should look something like:
 
 ```
-$ oc login -u kubeadmin -p db9Dr-J2csc-8oP78-9sbmf https://api.crc.testing:6443
+$ oc login -u kubeadmin -p <password> https://api.crc.testing:6443
 ```
 
-Of coure, your password will be different.
+If you are using a real OpenShift 4.x cluster, or OKD 4 cluster, you can find the login command from the OpenShift UI by clicking on your username in the top-right corner of the screan and select "Copy Login Command".
 
 ### 2. Install Argo CD
 
-The installation of the Argo CD operator and the creation of an Argo CD server instance are handled by the `setup.sh` script.
+The installation of the Argo CD operator and the creation of an Argo CD server instance are handled by the `setup-argocd.sh` script.
 
 Run:
 ```
-$ ./setup.sh
+$ ./setup-argocd.sh
 ```` 
 and wait for the script to complete.  It will take a few minutes to install the operator, then create an Argo CD server instance.
 
 * If you are using Windows, you can simply copy/paste the `oc` commands and run them from DOS, Powershell, or another terminal such as Cygwin or Linux Subsystems for Windows.
 * If you want to use `kubectl` instead of `oc`, first create the `argocd` project, then manually run the `oc` commands using `kubectl` instead.
 
-Be sure to note the **Argo CD password** printed when the script completes.  The default Argo CD password is the name of the main Argo CD pod.
+**Sneak Peek:** The script is really just two *kustomize* commands (`oc apply` with the `-k` flag).  The first command creates the [Argo CD Operator](https://github.com/argoproj-labs/argocd-operator), the second creates an instance of Argo CD that is pre-configured to use OpenShift OAuth.
 
-### 3. Login to the OpenShift and Argo CD Consoles
+### 3. Login to the Argo CD Console
 
 Login to the Argo CD console:
 * To get the URL for your server, run:
 ```
 $ oc get route argocd-server -n argocd
 ```  
-* Or... just go directly to [https://argocd-server-argocd.apps-crc.testing/](https://argocd-server-argocd.apps-crc.testing/)
 * Open the URL in a browser tab.  You will have to accept the self-signed certificate.
-* Login with user `admin` and the password printed in the terminal after the setup script completes.
-    * If you lose your terminal session, the password is the name of the argocd server pod.
+* Login with your OpenShift username and password
 
-Login to the OpenShift console:
+Your Argo CD console will be empty for now, but you will fill it up soon!
 
-* To open the OpenShift console in a new browser tab, run:  
+### 4. Login to the OpenShift Console
 
+Login to the OpenShift UI as a user that can view the namespaces Argo CD is about to create.
+
+If you are using CodeReady Containers, you can open a new browser tab to the UI with the following command:
 ```
 $ crc console
 ```  
 
-You will have to accept the self-signed certificate.
+**Note:** With CodeReady Containers you will have to accept the self-signed certificate.  You can login using the `kubeadmin` username and password printed in the terminal when CodeReady Containers finished booting.
 
-* Login to OpenShift using the `kubeadmin` username and password printed in the terminal when CodeReady Containers finished booting.
-* Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
-
-Your (empty) OpenShift and Argo CD consoles should look like this.  You will fill them up soon!
-
-![OpenShift](images/openshift.png)
-![Argo CD](images/argocd.png)
+Make sure you are in the **Developer** perspective (change this at the top of the left navigation panel).  The rest of the instructions assume you are in this view.
 
 ## Install Demo
 
-### 1. Install Argo CD Projects
+Here we are going to use Kustomize to setup both the *administrator* and *developer* infrastructure required for ths demo in Argo CD.
+
+Although this demo is greatly simplified, the general idea is that *cluster admins* will have their own set of repositories that control cluster and project-specific configuration (OAuth config, security controls, project resource quotas and limits, etc...).  *Developers* will have their own set of repositories that will be limited to configuration specific to their projects (Deployments, Services, Persistent Volume Claims, etc...).
+
+At the end of this demo, you can start over and strictly use the existing Kustomize resources if you want to see how to provision the same infrastructure without using Argo CD.
+
+### 1. Install the Admin Configuration
+
+From the command line, run the following command to create the administrator [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) and [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications) in Argo CD.
+
+```
+$ oc apply -k overlays/admins/
+```
+
+This will find the `kustomization.yaml` file in the specified directory and 
 
 [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) are a way to manage Argo CD [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications).
 
