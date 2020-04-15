@@ -121,7 +121,7 @@ This will find the `kustomization.yaml` file in the specified directory and appl
 
 So, what just happened?
 
-First, two Argo CD [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) were created.  One project for *admin* related activities and one for *developer* related activities.  Argo CD *Projects* are a convenient way to group Argo CD *Applications* (explained next).  *Projects* also determine what *cluster* and *namespace* resources associated *Applications* may or may not control, what cluster the appliations are meant for, and what git repositories can be referenced.
+First, two Argo CD [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) were created.  One project for *admin* related activities and one for *developer* related activities.  Argo CD *Projects* are a convenient way to group Argo CD *Applications* (explained next).  *Projects* also determine what *cluster* and *namespace* resources the *Applications* may or may not control, what cluster the appliations are meant for, and what git repositories can be referenced.
 
 Second, there were three [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications) created.  Argo CD *Applications* reference a git repository and context path where Kubernetes manifests (or Helm charts) can be found.  The lifecycle of these manifests in the target cluster is then managed by Argo CD.  The three applications that were created by the command above are:
 * CICD Admin Config: CICD namespace, network policies, and Jenkins role binding.
