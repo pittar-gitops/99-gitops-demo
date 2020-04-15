@@ -160,7 +160,7 @@ Now, your Argo CD UI should have 7 applications.  Some may still by synchronizin
 
 Now that we have populated the cluster, you can click in and take a look at what has been created in these apps.  If you look at the `petclinic-dev` application in the `demo-apps` project, you will see that a number of objects have been created.  But where did they come from?
 
-![Argo CD Petclinic DEV](images/argocd-petclinic-dev.png)
+![Argo CD Petclinic DEV](images/argocd-app-petclinic-dev.png)
 
 Well, if you look at the definition of the `petclinic-dev` application, you will see it points to a particular git repository and context path, namely [https://github.com/pittar-gitops/99-gitops-demo.git and /02-developers/overlays/petclinic-dev](https://github.com/pittar-gitops/99-gitops-demo/tree/master/02-developers/overlays/petclinic-dev).  In here you will find two things:
 1. Another `kustomization.yaml` file
