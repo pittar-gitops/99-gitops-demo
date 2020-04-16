@@ -114,7 +114,7 @@ At the end of this demo, you can start over and strictly use the existing Kustom
 From the command line, run the following command to create the administrator [Projects](https://argoproj.github.io/argo-cd/user-guide/projects/) and [Applications](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications) in Argo CD.
 
 ```
-oc apply -k 01-admins/overlays/00-argocd/admins/
+$ oc apply -k 01-admins/overlays/00-argocd/admins/
 ```
 
 This will find the `kustomization.yaml` file in the specified directory and apply the `resources` that are listed.  The file looks like this:
@@ -296,94 +296,6 @@ So, what is the build that we just kicked off responsible for?  Well:
 If you want to follow the build logs, you can click the "view logs" link in the pipeline.  This will bring you to the Jenkins build log for this build.  You will have to login to Jenkins with your OpenShift credentials, as it is fully integrated with OpenShift OAuth.
 
 Done!  In only a few minutes we have gone from a completely empty cluster to a cluster with properly configured environments, CI/CD tools, builds, and running instances of an application!
-
-
-
-
-The **demo-builds** application sets up two different [BuildConfigs](https://docs.openshift.com/container-platform/4.3/builds/understanding-buildconfigs.html).  It will also create an [ImageStream](https://docs.openshift.com/container-platform/4.3/openshift_images/image-streams-manage.html) to track the container images you will be building.
-
-One of these Build Configs, `petclinic-jenkins-pipeline`, is a [Jenkins Pipeline Build](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html#builds-strategy-pipeline-build_build-strategies).  It will start a new build on our Jenkins server based on a git repository that has a `Jenkinsfile` in its root.
-
-The other build, `petclinic-build`, is a [Source-to-Image](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html#build-strategy-s2i_build-strategies) (s2i) build.  It will take the binary output that Jenkins produces (an executable *jar* file in this case) and builds a new container image based on this binary (OpenJDK 8 in our case).
-
-A deeper dive into [builds on OpenShift](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html) is out of scope of this demo.  If you do want to learn more, the [documentation](https://docs.openshift.com/container-platform/4.3/builds/build-strategies.html) is a good place to start.
-
-In the OpenShift UI, you can switch to the *cicd* project and click on *Topology* (*Project* drop down at the top of the main panel).  Here, you will see a Jenkins server pod (either started or starting).  You will also see the two builds we just created if you click on the *Builds* link from the left nav.  Don't start these yet!
-
-If you want to open the Jenkins UI, you can click on the *open link* icon attached to the pod.  It will ask for your OpenShift login credentials, as this Jenkins image is integrated with OpenShift OAuth.
-
-![open link](images/jenkins.png)
-
-Now that we have a Jenkins server and a couple of BuildConigs, we are ready to setup our application environments!
-
-### 4. Create the DEV and TEST Application Environments
-
-The *policy* part (quotas/limits/networkpolicy/roles) of our DEV and TEST environments has been created for us in a previous step.  We now have empty **demo-dev** and **demo-test** projects (environments) ready to deploy some resources into!  Let's set that up now.  This would be the responsibility of the developement team and these are the resources they would have control over.
-
-Create DEV and TEST applications:
-
-```
-$ oc apply -f applications/demo-app-dev.yaml 
-application.argoproj.io/demo-app-dev created
-
-$ oc apply -f applications/demo-app-test.yaml 
-application.argoproj.io/demo-app-test created
-```
-
-If you check your Argo CD console, you will see two new projects have appeared.  Once they have completed their sync, your **demo-dev** and **demo-test** projects in OpenShift will each contain:
-* A [DeploymentConfig](https://docs.openshift.com/container-platform/4.3/applications/deployments/deployment-strategies.html) describing how to run your application.
-* A Service to load balance traffic to pods on the internal network.
-* A [Route](https://docs.openshift.com/container-platform/4.3/networking/routes/route-configuration.html) to expose the application to the outside world.
-
-In each case, Argo CD will use [Kustomize](https://kustomize.io/) to specify the container image that should be used in each environment, as well as a unique URL for the routes in each environment.
-
-If you take a look at either of the projects in the OpenShift UI, you will notice the pods aren't running yet.  That is because Jenkins is responsible for *rolling out* our application once it has been built and tested.  We will do this next!
-
-### 5.  Build and Deploy
-
-So far, we have configured our enviornment (created projects, quotas/limits, and network policies), setup CI/CD tools (well... just Jenkins, but it is not difficult to apply the same pattern to include other tools as well), configured builds, and populated our DEV and TEST environments with the resources required to run the application, but customized for each environment.  The best part is, since this is all in git repositories it is completely reproducible!  With proper source control management policies, it is also traceable and becomes an audit log of cluster and project configuration.  Neat!
-
-Ok, on to the builds.
-
-There are two builds configured, but we will only trigger the Jenkins pipeline build directly.  The other build, an OpenJDK *source-to-image* build, will be triggered by the Jenkins pipeline.
-
-You can trigger this build from the OpenShift UI, or from the `oc` cli.
-
-From the OpenShift UI:
-
-* From the `cicd` project in the OpenShift UI, click on **Builds** item from the left navigation panel.
-* Click on the `petclinic-jenkins-pipeline` link.
-* From `Action` drop down list at the top-right of the screen, select **Start Build**.
-* You can then follow the build progress from the build screen, or click on the **View logs** link to jump straight into the Jenkins build and follow the logs from there.
-
-From teh OpenShift CLI:
-
-Alternatively, you can start the build with the `oc` cli tool:
-
-```
-$ oc project cicd
-$ oc start-build petclinic-jenkins-pipeline -n cicd
-```
-
-This triggeres a Jenkins pipeline build. This will follow the steps in the `Jenkinsfile` located in the root of the associated git repository.  You can view this file here:
-[Jenkinsfile](https://github.com/pittar/spring-petclinic/blob/gitops-demo/Jenkinsfile)
-
-The steps in this Jenkins pipeline build are:
-* Clone the git repository
-* Build and test the application with Maven.  The output is an executable jar named *app.jar*.
-* Trigger the *source-to-image* build - uploading the executable jar to be packaged as a container image using the Red Hat OpenJDK base image.
-* *Tag* this new image with the `dev` tag.
-* Rollout (deploy) the latest `dev` tagged image to the **demo-dev** project.
-* *Tag* the `dev` image with the `test` tag.
-* Rollout (deploy) the latest `test` tagged image to the **demo-test** project.
-
-You should be able to access your Jenkins instance at [https://jenkins-cicd.apps-crc.testing/](https://jenkins-cicd.apps-crc.testing/).  Login using your kubeadmin username and password.  This Jenkins instance is integrated with OpenShift OAuth.
-
-You can follow along with the build in the OpenShift UI, or you can follow the logs in Jenkins.
-
-You can then see your running dev and test apps!  They will be accessible at:
-* DEV: [http://petclinic-dev.apps-crc.testing/](http://petclinic-dev.apps-crc.testing/)
-* TEST: [http://petclinic-test.apps-crc.testing/](http://petclinic-test.apps-crc.testing/)
 
 ## Conclusion
 
