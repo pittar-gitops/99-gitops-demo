@@ -5,6 +5,8 @@ metadata:
   labels:
     example: defaults
 spec:
+  server:
+    route: true
   dex:
     image: quay.io/ablock/dex
     version: openshift-connector
