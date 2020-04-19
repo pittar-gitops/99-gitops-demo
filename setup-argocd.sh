@@ -5,7 +5,7 @@ LANG=C
 echo ""
 echo "Installing Argo CD Operator."
 
-oc apply -k 00-setup/argocd-operator/overlays
+oc apply -k 00-setup/argocd-operator
 
 echo "Pause 10 seconds for the creation of the InstallPlan."
 sleep 10
@@ -27,7 +27,7 @@ oc get crd | grep argo
 
 echo "Deploying Argo CD instance"
 
-oc apply -k 00-setup/argocd/overlays
+oc apply -k 00-setup/argocd
 
 echo "Waiting for Argo CD server to start..."
 

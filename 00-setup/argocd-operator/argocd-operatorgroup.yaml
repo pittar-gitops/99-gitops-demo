@@ -6,6 +6,5 @@ metadata:
   generateName: argocd-
   name: argocd
 spec:
-  # This will be overwritten "patch-target-namespace.yaml" in overlays.
   targetNamespaces:
-  - default
+  - argocd

@@ -49,10 +49,5 @@ spec:
         hs.status = "Progressing"
         hs.message = "Waiting for certificate"
         return hs
-  resourceExclusions: |
-    - apiGroups:
-      - tekton.dev
-      kinds:
-      - PipelineRun
   rbac:
     defaultPolicy: role:admin
