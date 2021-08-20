@@ -1,8 +1,12 @@
 # OpenShift GitOps Demo: Kustomize and Argo CD
 
-A small GitOps demo on [OpenShift](https://openshift.com) using [Kustomize](https://github.com/kubernetes-sigs/kustomize) for manifest customization/templating and [Argo CD](https://argoproj.github.io/argo-cd/) to manage OpenShift cluster configuration, environments, and applications based on the Kustomize resources.
+## Deprecation Warning
+
+This demo is pretty old (originally published in March 2020) and is no longer maintained.  For a more up-to-date demo that is very similar, but uses the supported [OpenShift GitOps](https://docs.openshift.com/container-platform/latest/cicd/gitops/understanding-openshift-gitops.html) version of Argo CD as well as [OpenShift Pipelines](https://docs.openshift.com/container-platform/latest/cicd/pipelines/understanding-openshift-pipelines.html) ([Tekton](https://tekton.dev)), please [see this GitOps and Serverless CI/CD demo](https://github.com/pittar-demos/gitops-and-tekton-with-openshift).
 
 ## What's Included
+
+A small GitOps demo on [OpenShift](https://openshift.com) using [Kustomize](https://github.com/kubernetes-sigs/kustomize) for manifest customization/templating and [Argo CD](https://argoproj.github.io/argo-cd/) to manage OpenShift cluster configuration, environments, and applications based on the Kustomize resources.
 
 * Argo CD - Both the Operator and an Argo CD server
 * CI/CD tools - Only Jenkins for the demo
